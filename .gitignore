@@ -2,3 +2,6 @@ fields/
 presets/
 defaults.json
 presets.json
+icons.svg
+icons/
+node_modules/
