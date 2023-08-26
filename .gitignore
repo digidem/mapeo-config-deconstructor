@@ -5,3 +5,4 @@ presets.json
 icons.svg
 icons/
 node_modules/
+.aider*
