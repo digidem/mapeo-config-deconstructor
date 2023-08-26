@@ -1,0 +1,38 @@
+{
+  "name": "{name}",
+  "version": "1.0.0",
+  "description": "Mapeo config for {name}",
+  "devDependencies": {
+    "mapeo-config-renderer": "^1.0.0",
+    "mapeo-config-translator": "^1.1.1",
+    "mapeo-settings-builder": "github:digidem/mapeo-settings-builder#custom-presets-folder",
+    "mkdirp": "^1.0.4",
+    "rimraf": "^3.0.2",
+    "svgo": "^3.0.2"
+  },
+  "scripts": {
+    "start": "mapeo-config-renderer",
+    "build": "mkdirp build && svgo icons && node ./scripts/gen-defaults.js",
+    "translations": "mapeo-config-translator",
+    "extract-messages": "mkdirp messages && mapeo-settings extract-messages -o messages/en.json",
+    "prepublishOnly": "rimraf dist && mkdirp dist && npm run -s build && tar -C dist -xf build/${npm_package_name}-v${npm_package_version}.mapeosettings",
+    "test": "mapeo-settings lint"
+  },
+  "author": "",
+  "license": "CC-BY-NC-4.0",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/presets.json",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digidem/{name}.git"
+  },
+  "keywords": [
+    "mapeo"
+  ],
+  "bugs": {
+    "url": "https://github.com/digidem/{name}/issues"
+  },
+  "homepage": "https://github.com/digidem/{name}#readme"
+}

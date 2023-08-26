@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { desconstructPresets, desconstructSvgSprite } = require("./index.js");
-const { copyFiles } = require("./index.js");
+const { desconstructPresets, desconstructSvgSprite } = require("./src/index.js");
+const { copyFiles } = require("./src/index.js");
 
 const configFolder = process.argv[2];
 let outputFolder = process.argv[3];
