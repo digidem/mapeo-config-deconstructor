@@ -18,13 +18,13 @@ async function desconstructPresets(configFolder, outputFolder) {
     Object.keys(json).map(async (i) => {
       if (i === "presets" || i === "fields") {
         Object.entries(json[i]).map(async ([key, value]) => {
-          await fs.mkdirSync(path.join(configFolder, i), { recursive: true });
-          const filePath = path.join(configFolder, i, `${key}.json`);
+          await fs.mkdirSync(path.join(outputFolder, i), { recursive: true });
+          const filePath = path.join(outputFolder, i, `${key}.json`);
           await fs.writeFileSync(filePath, JSON.stringify(value));
           log(`Wrote ${filePath}`);
         });
       } else if (i === "defaults") {
-        const filePath = path.join(configFolder, `${i}.json`);
+        const filePath = path.join(outputFolder, `${i}.json`);
         await fs.writeFileSync(filePath, JSON.stringify(json[i]));
         log(`Wrote ${filePath}`);
       }
@@ -41,7 +41,7 @@ async function desconstructSvgSprite(configFolder, outputFolder) {
       .readFileSync(path.join(configFolder, "icons.svg"))
       .toString();
     const parsed = await parseStringPromise(file);
-    await fs.mkdirSync(path.join(configFolder, "icons"), { recursive: true });
+    await fs.mkdirSync(path.join(outputFolder, "icons"), { recursive: true });
     if (parsed?.svg?.symbol.length > 0) {
       parsed.svg.symbol.forEach(async (e) => {
         const builder = new Builder();
@@ -56,7 +56,7 @@ async function desconstructSvgSprite(configFolder, outputFolder) {
           splitName.length > 1
             ? `${splitName[0]}-24px.svg`
             : `${splitName[0]}-100px.svg`;
-        const filePath = path.join(configFolder, "icons", fileName);
+        const filePath = path.join(outputFolder, "icons", fileName);
         await fs.writeFileSync(filePath, newXml);
         log(`Wrote ${filePath}`);
       });
