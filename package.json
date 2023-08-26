@@ -8,7 +8,12 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "prettier --write ./**/*.js"
+    "lint": "prettier --write ./**/*.js",
+    "prepare": "husky install",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": "npm run lint"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +21,9 @@
     "tar": "^6.1.11",
     "xml2js": "^0.4.23",
     "prettier": "^2.4.1"
+  },
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2"
   }
 }
