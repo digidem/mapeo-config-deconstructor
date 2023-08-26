@@ -1,4 +1,5 @@
-const chai = require('chai');
+const chai = require("chai");
+const sinon = require("sinon");
 const expect = chai.expect;
 const {
   desconstructPresets,
@@ -7,6 +8,8 @@ const {
   createPackageJson,
   extractConfig,
 } = require("./index");
+const fs = require("fs");
+const tar = require("tar");
 
 describe("desconstructPresets", () => {
   it("should ...", () => {
@@ -36,16 +39,12 @@ describe("createPackageJson", () => {
   });
 });
 
-const sinon = require('sinon');
-const fs = require('fs');
-const tar = require('tar');
-
 describe("extractConfig", () => {
   let fsStub, tarStub;
 
   beforeEach(() => {
-    fsStub = sinon.stub(fs, 'lstatSync');
-    tarStub = sinon.stub(tar, 'x');
+    fsStub = sinon.stub(fs, "lstatSync");
+    tarStub = sinon.stub(tar, "x");
   });
 
   afterEach(() => {
@@ -57,7 +56,9 @@ describe("extractConfig", () => {
     try {
       await extractConfig();
     } catch (error) {
-      expect(error.message).to.equal("Please provide a configPath as the first argument.");
+      expect(error.message).to.equal(
+        "Please provide a configPath as the first argument.",
+      );
     }
   });
 
@@ -65,7 +66,7 @@ describe("extractConfig", () => {
     fsStub.returns({ isFile: () => true });
     tarStub.resolves();
 
-    const result = await extractConfig('path/to/config.tar');
+    const result = await extractConfig("path/to/config.tar");
     expect(result.configFolder).to.exist;
     expect(result.outputFolder).to.exist;
   });
@@ -73,7 +74,7 @@ describe("extractConfig", () => {
   it("should return paths without extraction if configPath is a directory", async () => {
     fsStub.returns({ isFile: () => false, isDirectory: () => true });
 
-    const result = await extractConfig('path/to/config');
+    const result = await extractConfig("path/to/config");
     expect(result.configFolder).to.exist;
     expect(result.outputFolder).to.exist;
   });
