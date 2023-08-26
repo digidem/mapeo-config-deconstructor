@@ -1,8 +1,11 @@
 {
   "name": "mapeo-config-deconstructor",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "mapeo-config-deconstructor": "./bin.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "prettier --write ./**/*.js"
