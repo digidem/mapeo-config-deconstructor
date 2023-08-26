@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { parseStringPromise, Builder } = require('xml2js')
 
-async function desconstructPresets(configFolder) {
+async function desconstructPresets(configFolder, outputFolder) {
     const file = await fs.readFileSync(path.join(configFolder, 'presets.json'))
     const json = await JSON.parse(file)
     Object.keys(json).map(async i => {
@@ -19,7 +19,7 @@ async function desconstructPresets(configFolder) {
     })
 }
 
-async function desconstructSvgSprite(configFolder) {
+async function desconstructSvgSprite(configFolder, outputFolder) {
     const file = await fs.readFileSync(path.join(configFolder, 'icons.svg')).toString()
     const parsed = await parseStringPromise(file)
     await fs.mkdirSync(path.join(configFolder, 'icons'), { recursive: true })
@@ -40,7 +40,19 @@ async function desconstructSvgSprite(configFolder) {
     }
 }
 
+const copyFiles = async (configFolder, outputFolder) => {
+    const filesToCopy = ['translation.json', 'style.css', 'metadata.json']
+    for (const file of filesToCopy) {
+        const src = path.join(configFolder, file)
+        const dest = path.join(outputFolder, file)
+        if (fs.existsSync(src)) {
+            fs.copyFileSync(src, dest)
+        }
+    }
+}
+
 module.exports = {
     desconstructPresets,
-    desconstructSvgSprite
+    desconstructSvgSprite,
+    copyFiles
 }
