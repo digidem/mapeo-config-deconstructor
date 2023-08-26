@@ -13,7 +13,7 @@ You can use Mapeo Configuration Deconstructor via `npx` or install it globally u
 
 ### Using npx
 ```bash
-npx mapeo-config-deconstructor [configFolder] [outputFolder]
+npx mapeo-config-deconstructor [config] [outputFolder]
 ```
 
 ### Installing globally
