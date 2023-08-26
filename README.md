@@ -1,4 +1,5 @@
 # Mapeo Configuration Deconstructor
+[![.github/workflows/publish-npm.yml](https://github.com/digidem/mapeo-config-deconstructor/actions/workflows/publish-npm.yml/badge.svg?branch=main)](https://github.com/digidem/mapeo-config-deconstructor/actions/workflows/publish-npm.yml)
 
 Mapeo Configuration Deconstructor is a tool designed to simplify the process of creating and managing Mapeo configurations. It provides a set of utilities to deconstruct a Mapeo configuration into an config folder that can be re-built using [mapeo-settings-builder](https://github.com/digidem/mapeo-settings-builder).
 
