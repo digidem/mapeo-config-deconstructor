@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const { parseStringPromise, Builder } = require("xml2js");
+const tar = require("tar");
+const crypto = require("crypto");
 
 const DEBUG = process.env.DEBUG === "true";
 
@@ -10,8 +12,22 @@ const log = (...args) => {
   }
 };
 
-async function desconstructPresets(configFolder, outputFolder) {
+async function extractConfig(config) {
+  if (fs.lstatSync(config).isFile()) {
+    const uid = crypto.randomBytes(16).toString("hex");
+    const tmpFolder = `/tmp/mapeo-settings-${uid}`;
+    await tar.x({
+      file: config,
+      cwd: tmpFolder,
+    });
+    return tmpFolder;
+  }
+  return config;
+}
+
+async function desconstructPresets(config, outputFolder) {
   try {
+    const configFolder = await extractConfig(config);
     log(`Desconstructing presets from ${configFolder} to ${outputFolder}`);
     const file = await fs.readFileSync(path.join(configFolder, "presets.json"));
     const json = await JSON.parse(file);
@@ -34,8 +50,9 @@ async function desconstructPresets(configFolder, outputFolder) {
   }
 }
 
-async function desconstructSvgSprite(configFolder, outputFolder) {
+async function desconstructSvgSprite(config, outputFolder) {
   try {
+    const configFolder = await extractConfig(config);
     log(`Desconstructing SVG sprite from ${configFolder} to ${outputFolder}`);
     const file = await fs
       .readFileSync(path.join(configFolder, "icons.svg"))
@@ -66,8 +83,9 @@ async function desconstructSvgSprite(configFolder, outputFolder) {
   }
 }
 
-const copyFiles = async (configFolder, outputFolder) => {
+const copyFiles = async (config, outputFolder) => {
   try {
+    const configFolder = await extractConfig(config);
     log(`Copying files from ${configFolder} to ${outputFolder}`);
     const filesToCopy = ["translation.json", "style.css", "metadata.json"];
     for (const file of filesToCopy) {
