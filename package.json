@@ -2,9 +2,9 @@
   "name": "mapeo-config-deconstructor",
   "version": "2.0.1",
   "description": "",
-  "main": "bin.js",
+  "main": "src/bin.js",
   "bin": {
-    "mapeo-config-deconstructor": "./bin.js"
+    "mapeo-config-deconstructor": "./src/bin.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

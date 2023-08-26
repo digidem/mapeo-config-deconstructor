@@ -2,9 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 const tar = require("tar");
-const { v4: uuidv4 } = require('uuid');
-const { desconstructPresets, desconstructSvgSprite } = require("./src/index.js");
-const { copyFiles } = require("./src/index.js");
+const { v4: uuidv4 } = require("uuid");
+const { desconstructPresets, desconstructSvgSprite } = require("./index.js");
+const { copyFiles } = require("./index.js");
 
 let config = process.argv[2];
 let outputFolder = process.argv[3];
@@ -33,8 +33,13 @@ async function extractConfig(configPath) {
 
 async function createPackageJson(configFolder, outputFolder) {
   console.log("Building package.json", outputFolder);
-  const packageTemplate = fs.readFileSync(path.join(__dirname, "src", "package-template.json"), "utf-8");
-  const metadata = JSON.parse(fs.readFileSync(path.join(configFolder, "metadata.json"), "utf-8"));
+  const packageTemplate = fs.readFileSync(
+    path.join(__dirname, "src", "package-template.json"),
+    "utf-8",
+  );
+  const metadata = JSON.parse(
+    fs.readFileSync(path.join(configFolder, "metadata.json"), "utf-8"),
+  );
   const packageContent = packageTemplate.replace(/{name}/g, metadata.name);
   fs.writeFileSync(path.join(outputFolder, "package.json"), packageContent);
 }

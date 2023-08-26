@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { parseStringPromise, Builder } = require("xml2js");
 
-const DEBUG = process.env.DEBUG === 'true';
+const DEBUG = process.env.DEBUG === "true";
 
 const log = (...args) => {
   if (DEBUG) {
