@@ -1,6 +1,6 @@
 # Mapeo Configuration Deconstructor
 
-Mapeo Configuration Deconstructor is a tool designed to simplify the process of creating and managing Mapeo configurations. It provides a set of utilities to deconstruct a Mapeo configuration into its constituent parts, making it easier to understand, modify, and reconstruct.
+Mapeo Configuration Deconstructor is a tool designed to simplify the process of creating and managing Mapeo configurations. It provides a set of utilities to deconstruct a Mapeo configuration into an config folder that can be re-built using [mapeo-settings-builder](https://github.com/digidem/mapeo-settings-builder).
 
 ## Features
 - Deconstructs presets from a configuration folder to an output folder.
@@ -26,7 +26,5 @@ mapeo-config-deconstructor [configFolder] [outputFolder]
 ```
 
 ## TODO
-- Use tar to extract `.mapeosettings` file.
-- Turn the tool into an executable and get settings file from ARG.
+- Change configFolder input to be config. Check if it's a folder or file. In case it's a file use tar to extract `.mapeosettings` file into a /tmp/mapeo-settings-{random-uid} folder where the same logic for folder can be applied. Apply changes to README, bin.js and src/index.js files.
 - Improve error handling and reporting.
-- Add more customization options.
