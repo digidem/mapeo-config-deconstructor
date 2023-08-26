@@ -7,6 +7,14 @@ const { copyFiles } = require("./src/index.js");
 const configFolder = process.argv[2];
 let outputFolder = process.argv[3];
 
+async function createPackageJson(configFolder, outputFolder) {
+  console.log("Building package.json", outputFolder);
+  const packageTemplate = fs.readFileSync(path.join(__dirname, "src", "package-template.json"), "utf-8");
+  const metadata = JSON.parse(fs.readFileSync(path.join(configFolder, "metadata.json"), "utf-8"));
+  const packageContent = packageTemplate.replace(/{name}/g, metadata.name);
+  fs.writeFileSync(path.join(outputFolder, "package.json"), packageContent);
+}
+
 async function run() {
   if (!configFolder) {
     console.error("Please provide a config folder as the first argument.");
@@ -27,11 +35,7 @@ async function run() {
   await desconstructPresets(configFolder, outputFolder);
   await desconstructSvgSprite(configFolder, outputFolder);
   await copyFiles(configFolder, outputFolder);
-  console.log("Building package.json", outputFolder);
-  const packageTemplate = fs.readFileSync(path.join(__dirname, "src", "package-template.json"), "utf-8");
-  const metadata = JSON.parse(fs.readFileSync(path.join(configFolder, "metadata.json"), "utf-8"));
-  const packageContent = packageTemplate.replace(/{name}/g, metadata.name);
-  fs.writeFileSync(path.join(outputFolder, "package.json"), packageContent);
+  await createPackageJson(configFolder, outputFolder);
   console.log("Done!");
 }
 
