@@ -22,7 +22,7 @@ npm install -g mapeo-config-deconstructor
 ```
 Then you can run it with:
 ```bash
-mapeo-config-deconstructor [configFolder] [outputFolder]
+mapeo-config-deconstructor [config] [outputFolder]
 ```
 
 ## TODO
