@@ -37,7 +37,7 @@ describe("createPackageJson", () => {
 });
 
 describe("extractConfig", () => {
-  it("should ...", () => {
+  it("should take a tar file and ouput a config folder", () => {
     // Test goes here
     // expect(extractConfig()).to...
   });
