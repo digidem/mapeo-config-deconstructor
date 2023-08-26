@@ -1,3 +1,5 @@
+const chai = require('chai');
+const expect = chai.expect;
 const {
   desconstructPresets,
   desconstructSvgSprite,
@@ -9,29 +11,34 @@ const {
 describe("desconstructPresets", () => {
   it("should ...", () => {
     // Test goes here
+    // expect(desconstructPresets()).to...
   });
 });
 
 describe("desconstructSvgSprite", () => {
   it("should ...", () => {
     // Test goes here
+    // expect(desconstructSvgSprite()).to...
   });
 });
 
 describe("copyFiles", () => {
   it("should ...", () => {
     // Test goes here
+    // expect(copyFiles()).to...
   });
 });
 
 describe("createPackageJson", () => {
   it("should ...", () => {
     // Test goes here
+    // expect(createPackageJson()).to...
   });
 });
 
 describe("extractConfig", () => {
   it("should ...", () => {
     // Test goes here
+    // expect(extractConfig()).to...
   });
 });
