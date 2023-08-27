@@ -45,7 +45,7 @@ async function extractConfig(configPath, outputFolder) {
     metadataPath = path.join(tmpFolder, "metadata.json");
     const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
     const configName = metadata.name;
-    const finalPath = outputFolder || path.join(path.cwd(), configName);
+    const finalPath = outputFolder || path.join(path.cwd());
     return {
       configFolder: tmpFolder,
       outputFolder: finalPath,
