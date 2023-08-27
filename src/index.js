@@ -23,7 +23,8 @@ async function extractConfig(configPath, outputFolder = ".") {
   if (stats.isFile()) {
     log("Config path is a file. Creating temporary folder...");
     const uid = crypto.randomBytes(16).toString("hex");
-    const tmpFolder = `/tmp/mapeo-settings-${uid}`;
+    const rootDir = process.env.ROOT_DIR || process.cwd();
+    const tmpFolder = `${rootDir}/mapeo-settings-${uid}`;
     fs.mkdirSync(tmpFolder, { recursive: true });
     log("Temporary folder created. Extracting config...");
     await tar.x({
@@ -43,9 +44,11 @@ async function extractConfig(configPath, outputFolder = ".") {
       }));
     metadataPath = path.join(tmpFolder, "metadata.json");
     const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+    const configName = metadata.name;
     return {
       configFolder: tmpFolder,
-      outputFolder: path.join(outputFolder, metadata.name),
+      outputFolder: path.join(outputFolder, configName),
+      configName,
     };
   } else if (!stats.isDirectory()) {
     console.error("Invalid config path. It should be a file or a directory.");
@@ -54,9 +57,11 @@ async function extractConfig(configPath, outputFolder = ".") {
   log("Config path is a directory. No extraction needed.");
   metadataPath = path.join(configPath, "metadata.json");
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+  const configName = metadata.name;
   return {
     configFolder: configPath,
-    outputFolder: path.join(outputFolder, metadata.name),
+    outputFolder: path.join(outputFolder, configName),
+    configName,
   };
 }
 
