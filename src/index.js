@@ -23,7 +23,7 @@ async function extractConfig(configPath, outputFolder = ".") {
   if (stats.isFile()) {
     log("Config path is a file. Creating temporary folder...");
     const uid = crypto.randomBytes(16).toString("hex");
-    const rootDir = process.env.ROOT_DIR || process.cwd();
+    const rootDir = process.env.ROOT_DIR || '/tmp';
     const tmpFolder = `${rootDir}/mapeo-settings-${uid}`;
     fs.mkdirSync(tmpFolder, { recursive: true });
     log("Temporary folder created. Extracting config...");
