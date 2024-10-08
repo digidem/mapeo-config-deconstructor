@@ -7,7 +7,7 @@
     "mapeo-config-deconstructor": "./src/bin.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --experimental-modules src/**/*.test.js",
     "lint": "prettier --write ./**/*.js",
     "prepare": "husky install",
     "precommit": "lint-staged"
@@ -23,7 +23,10 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "chai": "^5.1.1",
     "husky": "^8.0.3",
-    "lint-staged": "^14.0.1"
+    "lint-staged": "^14.0.1",
+    "mocha": "^10.7.3",
+    "sinon": "^19.0.2"
   }
 }
