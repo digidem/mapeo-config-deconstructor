@@ -1,5 +1,3 @@
-const chai = require("chai");
-const expect = chai.expect;
 const sinon = require("sinon");
 const fs = require("fs");
 const tar = require("tar");
@@ -10,7 +8,9 @@ const desconstructSvgSprite = require("./desconstructSvgSprite");
 const copyFiles = require("./copyFiles");
 const createPackageJson = require("./createPackageJson");
 
-describe("extractConfig", () => {
+describe("extractConfig", async () => {
+  const chai = await import("chai");
+  const expect = chai.expect;
   let fsStub, tarStub;
 
   beforeEach(() => {

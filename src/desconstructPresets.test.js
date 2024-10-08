@@ -1,11 +1,11 @@
-const chai = require("chai");
-const expect = chai.expect;
 const sinon = require("sinon");
 const fs = require("fs");
 const path = require("path");
 const desconstructPresets = require("./desconstructPresets");
 
-describe("desconstructPresets", () => {
+describe("desconstructPresets", async () => {
+  const chai = await import("chai");
+  const expect = chai.expect;
   let fsStub;
 
   beforeEach(() => {

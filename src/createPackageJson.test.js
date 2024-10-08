@@ -1,11 +1,11 @@
-const chai = require("chai");
-const expect = chai.expect;
 const sinon = require("sinon");
 const fs = require("fs");
 const path = require("path");
 const createPackageJson = require("./createPackageJson");
 
-describe("createPackageJson", () => {
+describe("createPackageJson", async () => {
+  const chai = await import("chai");
+  const expect = chai.expect;
   let fsStub;
 
   beforeEach(() => {

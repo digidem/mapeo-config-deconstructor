@@ -7,7 +7,7 @@
     "mapeo-config-deconstructor": "./src/bin.js"
   },
   "scripts": {
-    "test": "mocha src/**/*.test.js",
+    "test": "mocha --experimental-modules src/**/*.test.js",
     "lint": "prettier --write ./**/*.js",
     "prepare": "husky install",
     "precommit": "lint-staged"

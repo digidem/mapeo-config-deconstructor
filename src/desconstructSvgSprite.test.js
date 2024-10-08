@@ -1,12 +1,12 @@
-const chai = require("chai");
-const expect = chai.expect;
 const sinon = require("sinon");
 const fs = require("fs");
 const path = require("path");
 const xml2js = require("xml2js");
 const desconstructSvgSprite = require("./desconstructSvgSprite");
 
-describe("desconstructSvgSprite", () => {
+describe("desconstructSvgSprite", async () => {
+  const chai = await import("chai");
+  const expect = chai.expect;
   let fsStub, parseStringPromiseStub;
 
   beforeEach(() => {
