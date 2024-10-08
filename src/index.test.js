@@ -1,44 +1,14 @@
 const chai = require("chai");
 const expect = chai.expect;
-const {
-  desconstructPresets,
-  desconstructSvgSprite,
-  copyFiles,
-  createPackageJson,
-  extractConfig,
-} = require("./index");
-
-describe("desconstructPresets", () => {
-  it("should ...", () => {
-    // Test goes here
-    // expect(desconstructPresets()).to...
-  });
-});
-
-describe("desconstructSvgSprite", () => {
-  it("should ...", () => {
-    // Test goes here
-    // expect(desconstructSvgSprite()).to...
-  });
-});
-
-describe("copyFiles", () => {
-  it("should ...", () => {
-    // Test goes here
-    // expect(copyFiles()).to...
-  });
-});
-
-describe("createPackageJson", () => {
-  it("should ...", () => {
-    // Test goes here
-    // expect(createPackageJson()).to...
-  });
-});
-
 const sinon = require("sinon");
 const fs = require("fs");
 const tar = require("tar");
+
+const extractConfig = require("./extractConfig");
+const desconstructPresets = require("./desconstructPresets");
+const desconstructSvgSprite = require("./desconstructSvgSprite");
+const copyFiles = require("./copyFiles");
+const createPackageJson = require("./createPackageJson");
 
 describe("extractConfig", () => {
   let fsStub, tarStub;
@@ -80,3 +50,6 @@ describe("extractConfig", () => {
     expect(result.outputFolder).to.exist;
   });
 });
+
+// The other function tests (desconstructPresets, desconstructSvgSprite, copyFiles, createPackageJson)
+// should be moved to their respective test files.
