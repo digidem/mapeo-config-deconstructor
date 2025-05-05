@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { parseStringPromise, Builder } = require("xml2js");
 const tar = require("tar");
+const AdmZip = require("adm-zip");
 const crypto = require("crypto");
 
 const DEBUG = process.env.DEBUG === "true";
@@ -12,6 +13,23 @@ const log = (...args) => {
   }
 };
 
+/**
+ * Detects the file format based on the file extension
+ * @param {string} filePath - Path to the file
+ * @returns {string|null} - 'mapeosettings', 'comapeocat', or null if unknown
+ */
+function detectFileFormat(filePath) {
+  if (!filePath) return null;
+
+  if (filePath.endsWith(".mapeosettings")) {
+    return "mapeosettings";
+  } else if (filePath.endsWith(".comapeocat")) {
+    return "comapeocat";
+  }
+
+  return null;
+}
+
 async function extractConfig(configPath, outputFolder) {
   log("Starting extraction of config...");
   if (!configPath) {
@@ -20,6 +38,7 @@ async function extractConfig(configPath, outputFolder) {
   }
   const stats = fs.lstatSync(configPath);
   let metadataPath;
+
   if (stats.isFile()) {
     log("Config path is a file. Creating temporary folder...");
     const uid = crypto.randomBytes(16).toString("hex");
@@ -27,21 +46,57 @@ async function extractConfig(configPath, outputFolder) {
     const tmpFolder = `${rootDir}/mapeo-settings-${uid}`;
     fs.mkdirSync(tmpFolder, { recursive: true });
     log("Temporary folder created. Extracting config...");
-    await tar.x({
-      file: configPath,
-      cwd: tmpFolder,
-      onentry: (entry) => {
-        if (entry.path.endsWith(".mapeosettings")) {
-          configPath = path.join(tmpFolder, entry.path);
-          log(`Config path updated to: ${configPath}`);
-        }
-      },
-    });
-    DEBUG &&
-      (await fs.readdirSync(tmpFolder, (err, files) => {
-        if (err) throw err;
+
+    // Detect file format
+    const fileFormat = detectFileFormat(configPath);
+    log(`Detected file format: ${fileFormat}`);
+
+    if (fileFormat === "mapeosettings") {
+      // Extract .mapeosettings file (tar format)
+      log(`Extracting .mapeosettings file: ${configPath}`);
+      try {
+        await tar.x({
+          file: configPath,
+          cwd: tmpFolder,
+          onentry: (entry) => {
+            if (entry.path.endsWith(".mapeosettings")) {
+              configPath = path.join(tmpFolder, entry.path);
+              log(`Config path updated to: ${configPath}`);
+            }
+          },
+        });
+        log(`Successfully extracted .mapeosettings file to ${tmpFolder}`);
+      } catch (error) {
+        console.error(`Error extracting .mapeosettings file: ${error.message}`);
+        process.exit(1);
+      }
+    } else if (fileFormat === "comapeocat") {
+      // Extract .comapeocat file (zip format)
+      log(`Extracting .comapeocat file: ${configPath}`);
+      try {
+        const zip = new AdmZip(configPath);
+        zip.extractAllTo(tmpFolder, true);
+        log(`Successfully extracted .comapeocat file to ${tmpFolder}`);
+      } catch (error) {
+        console.error(`Error extracting .comapeocat file: ${error.message}`);
+        process.exit(1);
+      }
+    } else {
+      console.error(
+        "Unsupported file format. Please provide a .mapeosettings or .comapeocat file.",
+      );
+      process.exit(1);
+    }
+
+    if (DEBUG) {
+      try {
+        const files = fs.readdirSync(tmpFolder);
         log(`Contents of ${tmpFolder}:`, files);
-      }));
+      } catch (err) {
+        log(`Error reading directory: ${err.message}`);
+      }
+    }
+
     metadataPath = path.join(tmpFolder, "metadata.json");
     const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
     const configName = metadata.name;
@@ -55,6 +110,7 @@ async function extractConfig(configPath, outputFolder) {
     console.error("Invalid config path. It should be a file or a directory.");
     process.exit(1);
   }
+
   log("Config path is a directory. No extraction needed.");
   metadataPath = path.join(configPath, "metadata.json");
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
@@ -159,5 +215,6 @@ module.exports = {
   copyFiles,
   createPackageJson,
   extractConfig,
+  detectFileFormat,
   log,
 };
