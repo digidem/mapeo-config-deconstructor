@@ -45,7 +45,7 @@ async function extractConfig(configPath, outputFolder) {
     metadataPath = path.join(tmpFolder, "metadata.json");
     const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
     const configName = metadata.name;
-    const finalPath = outputFolder || path.join(path.cwd());
+    const finalPath = outputFolder || path.cwd();
     return {
       configFolder: tmpFolder,
       outputFolder: finalPath,
@@ -59,6 +59,7 @@ async function extractConfig(configPath, outputFolder) {
   metadataPath = path.join(configPath, "metadata.json");
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
   const configName = metadata.name;
+  const finalPath = outputFolder || path.cwd();
   return {
     configFolder: configPath,
     outputFolder: finalPath,
@@ -158,4 +159,5 @@ module.exports = {
   copyFiles,
   createPackageJson,
   extractConfig,
+  log,
 };
