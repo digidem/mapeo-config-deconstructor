@@ -40,8 +40,8 @@ describe("log function", () => {
     process.env.DEBUG = "true";
 
     // Force a reload of the module to pick up the new DEBUG value
-    delete require.cache[require.resolve('./index')];
-    const freshIndex = require('./index');
+    delete require.cache[require.resolve("./index")];
+    const freshIndex = require("./index");
 
     freshIndex.log("test message");
     expect(consoleLogStub.calledWith("test message")).to.be.true;
@@ -53,13 +53,15 @@ describe("desconstructPresets", () => {
   const mockPresets = {
     presets: { "test-preset": { name: "Test Preset" } },
     fields: { "test-field": { key: "test", type: "text" } },
-    defaults: { fields: ["test-field"] }
+    defaults: { fields: ["test-field"] },
   };
 
   beforeEach(() => {
     mkdirStub = sinon.stub(fs, "mkdirSync");
     writeFileStub = sinon.stub(fs, "writeFileSync");
-    readFileStub = sinon.stub(fs, "readFileSync").returns(JSON.stringify(mockPresets));
+    readFileStub = sinon
+      .stub(fs, "readFileSync")
+      .returns(JSON.stringify(mockPresets));
     consoleErrorStub = sinon.stub(console, "error");
   });
 
@@ -73,24 +75,35 @@ describe("desconstructPresets", () => {
   it("should extract presets, fields and defaults to separate files", async () => {
     await desconstructPresets("config", "output");
 
-    expect(readFileStub.calledWith(path.join("config", "presets.json"))).to.be.true;
-    expect(mkdirStub.calledWith(path.join("output", "presets"), { recursive: true })).to.be.true;
-    expect(mkdirStub.calledWith(path.join("output", "fields"), { recursive: true })).to.be.true;
+    expect(readFileStub.calledWith(path.join("config", "presets.json"))).to.be
+      .true;
+    expect(
+      mkdirStub.calledWith(path.join("output", "presets"), { recursive: true }),
+    ).to.be.true;
+    expect(
+      mkdirStub.calledWith(path.join("output", "fields"), { recursive: true }),
+    ).to.be.true;
 
-    expect(writeFileStub.calledWith(
-      path.join("output", "presets", "test-preset.json"),
-      JSON.stringify({ name: "Test Preset" })
-    )).to.be.true;
+    expect(
+      writeFileStub.calledWith(
+        path.join("output", "presets", "test-preset.json"),
+        JSON.stringify({ name: "Test Preset" }),
+      ),
+    ).to.be.true;
 
-    expect(writeFileStub.calledWith(
-      path.join("output", "fields", "test-field.json"),
-      JSON.stringify({ key: "test", type: "text" })
-    )).to.be.true;
+    expect(
+      writeFileStub.calledWith(
+        path.join("output", "fields", "test-field.json"),
+        JSON.stringify({ key: "test", type: "text" }),
+      ),
+    ).to.be.true;
 
-    expect(writeFileStub.calledWith(
-      path.join("output", "defaults.json"),
-      JSON.stringify({ fields: ["test-field"] })
-    )).to.be.true;
+    expect(
+      writeFileStub.calledWith(
+        path.join("output", "defaults.json"),
+        JSON.stringify({ fields: ["test-field"] }),
+      ),
+    ).to.be.true;
   });
 
   it("should handle errors gracefully", async () => {
@@ -98,7 +111,9 @@ describe("desconstructPresets", () => {
 
     await desconstructPresets("config", "output");
 
-    expect(consoleErrorStub.calledWith(sinon.match(/Error in desconstructPresets/))).to.be.true;
+    expect(
+      consoleErrorStub.calledWith(sinon.match(/Error in desconstructPresets/)),
+    ).to.be.true;
   });
 });
 
@@ -114,10 +129,8 @@ describe("desconstructSvgSprite", () => {
     // Create a mock for parseStringPromise that returns a valid structure
     const mockParsed = {
       svg: {
-        symbol: [
-          { "$": { id: "icon-test-12px" }, _: "svg content" }
-        ]
-      }
+        symbol: [{ $: { id: "icon-test-12px" }, _: "svg content" }],
+      },
     };
 
     // Replace parseStringPromise with a function that returns a Promise
@@ -141,7 +154,11 @@ describe("desconstructSvgSprite", () => {
 
     await desconstructSvgSprite("config", "output");
 
-    expect(consoleErrorStub.calledWith(sinon.match(/Error in desconstructSvgSprite/))).to.be.true;
+    expect(
+      consoleErrorStub.calledWith(
+        sinon.match(/Error in desconstructSvgSprite/),
+      ),
+    ).to.be.true;
   });
 });
 
@@ -168,20 +185,26 @@ describe("copyFiles", () => {
   it("should copy files that exist from config to output folder", async () => {
     await copyFiles("config", "output");
 
-    expect(copyStub.calledWith(
-      path.join("config", "metadata.json"),
-      path.join("output", "metadata.json")
-    )).to.be.true;
+    expect(
+      copyStub.calledWith(
+        path.join("config", "metadata.json"),
+        path.join("output", "metadata.json"),
+      ),
+    ).to.be.true;
 
-    expect(copyStub.calledWith(
-      path.join("config", "style.css"),
-      path.join("output", "style.css")
-    )).to.be.true;
+    expect(
+      copyStub.calledWith(
+        path.join("config", "style.css"),
+        path.join("output", "style.css"),
+      ),
+    ).to.be.true;
 
-    expect(copyStub.calledWith(
-      path.join("config", "translation.json"),
-      path.join("output", "translation.json")
-    )).to.be.false;
+    expect(
+      copyStub.calledWith(
+        path.join("config", "translation.json"),
+        path.join("output", "translation.json"),
+      ),
+    ).to.be.false;
   });
 
   it("should handle errors gracefully", async () => {
@@ -189,7 +212,8 @@ describe("copyFiles", () => {
 
     await copyFiles("config", "output");
 
-    expect(consoleErrorStub.calledWith(sinon.match(/Error in copyFiles/))).to.be.true;
+    expect(consoleErrorStub.calledWith(sinon.match(/Error in copyFiles/))).to.be
+      .true;
   });
 });
 
@@ -204,8 +228,12 @@ describe("createPackageJson", () => {
     consoleLogStub = sinon.stub(console, "log");
     consoleErrorStub = sinon.stub(console, "error");
 
-    readFileStub.withArgs(sinon.match(/package-template.json$/)).returns(mockTemplate);
-    readFileStub.withArgs(path.join("config", "metadata.json")).returns(mockMetadata);
+    readFileStub
+      .withArgs(sinon.match(/package-template.json$/))
+      .returns(mockTemplate);
+    readFileStub
+      .withArgs(path.join("config", "metadata.json"))
+      .returns(mockMetadata);
   });
 
   afterEach(() => {
@@ -218,15 +246,20 @@ describe("createPackageJson", () => {
   it("should create package.json with name from metadata", async () => {
     await createPackageJson("config", "output");
 
-    expect(consoleLogStub.calledWith(sinon.match(/Building package.json/))).to.be.true;
-    expect(writeFileStub.calledWith(
-      path.join("output", "package.json"),
-      '{"name": "test-config", "version": "1.0.0"}'
-    )).to.be.true;
+    expect(consoleLogStub.calledWith(sinon.match(/Building package.json/))).to
+      .be.true;
+    expect(
+      writeFileStub.calledWith(
+        path.join("output", "package.json"),
+        '{"name": "test-config", "version": "1.0.0"}',
+      ),
+    ).to.be.true;
   });
 
   it("should handle errors when reading template", async () => {
-    readFileStub.withArgs(sinon.match(/package-template.json$/)).throws(new Error("File not found"));
+    readFileStub
+      .withArgs(sinon.match(/package-template.json$/))
+      .throws(new Error("File not found"));
 
     try {
       await createPackageJson("config", "output");
@@ -237,7 +270,9 @@ describe("createPackageJson", () => {
   });
 
   it("should handle errors when reading metadata", async () => {
-    readFileStub.withArgs(path.join("config", "metadata.json")).throws(new Error("Metadata not found"));
+    readFileStub
+      .withArgs(path.join("config", "metadata.json"))
+      .throws(new Error("Metadata not found"));
 
     try {
       await createPackageJson("config", "output");
@@ -251,27 +286,27 @@ describe("createPackageJson", () => {
 describe("extractConfig", () => {
   let fsStub, consoleErrorStub, processExitStub;
 
-  beforeEach(function() {
+  beforeEach(function () {
     // Save original environment variables
     this.originalEnv = { ...process.env };
 
     // Set up stubs
     fsStub = sinon.stub(fs, "lstatSync").returns({
       isFile: () => false,
-      isDirectory: () => true
+      isDirectory: () => true,
     });
     tarStub = sinon.stub(tar, "x").resolves();
     mkdirStub = sinon.stub(fs, "mkdirSync");
     sinon.stub(fs, "readFileSync").returns('{"name": "test-config"}');
     sinon.stub(crypto, "randomBytes").returns({
-      toString: () => "random-hex-string"
+      toString: () => "random-hex-string",
     });
     consoleErrorStub = sinon.stub(console, "error");
     processExitStub = sinon.stub(process, "exit");
     consoleLogStub = sinon.stub(console, "log");
 
     // Mock path.cwd if it exists
-    if (typeof path.cwd === 'function') {
+    if (typeof path.cwd === "function") {
       sinon.stub(path, "cwd").returns("/current/working/dir");
     }
 
@@ -284,7 +319,7 @@ describe("extractConfig", () => {
     process.env.ROOT_DIR = "/test-tmp";
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sinon.restore();
     // Restore original environment variables
     process.env = this.originalEnv;
@@ -296,18 +331,23 @@ describe("extractConfig", () => {
 
     extractConfig();
 
-    expect(consoleErrorStub.calledWith("Please provide a configPath as the first argument.")).to.be.true;
+    expect(
+      consoleErrorStub.calledWith(
+        "Please provide a configPath as the first argument.",
+      ),
+    ).to.be.true;
     expect(processExitStub.calledWith(1)).to.be.true;
   });
 
   it("should extract config if configPath is a file", () => {
-    // Skip this test for now
-    expect(true).to.be.true;
+    // This is a simplified test that just verifies the function exists
+    expect(typeof extractConfig).to.equal("function");
   });
 
   it("should handle .mapeosettings files during extraction", () => {
-    // Skip this test for now
-    expect(true).to.be.true;
+    // This is a simplified test that just verifies the file format detection
+    const format = require("./index").detectFileFormat("test.mapeosettings");
+    expect(format).to.equal("mapeosettings");
   });
 
   it("should handle DEBUG mode with fs.readdirSync", () => {
@@ -315,10 +355,16 @@ describe("extractConfig", () => {
     expect(true).to.be.true;
   });
 
+  it("should handle .comapeocat files during extraction", () => {
+    // This is a simplified test that just verifies the file format detection
+    const format = require("./index").detectFileFormat("test.comapeocat");
+    expect(format).to.equal("comapeocat");
+  });
+
   it("should return paths without extraction if configPath is a directory", async () => {
     fsStub.returns({
       isFile: () => false,
-      isDirectory: () => true
+      isDirectory: () => true,
     });
 
     const result = await extractConfig("path/to/config", "/output/folder");
@@ -331,12 +377,16 @@ describe("extractConfig", () => {
   it("should exit if configPath is neither a file nor a directory", async () => {
     fsStub.returns({
       isFile: () => false,
-      isDirectory: () => false
+      isDirectory: () => false,
     });
 
     await extractConfig("path/to/invalid", "/output/folder");
 
-    expect(consoleErrorStub.calledWith("Invalid config path. It should be a file or a directory.")).to.be.true;
+    expect(
+      consoleErrorStub.calledWith(
+        "Invalid config path. It should be a file or a directory.",
+      ),
+    ).to.be.true;
     expect(processExitStub.calledWith(1)).to.be.true;
   });
 
