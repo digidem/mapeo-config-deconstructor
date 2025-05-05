@@ -1,6 +1,6 @@
 {
   "name": "mapeo-config-deconstructor",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "",
   "main": "src/bin.js",
   "bin": {
@@ -18,12 +18,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "prettier": "^3.0.2",
-    "tar": "^6.1.15",
+    "prettier": "^3.5.3",
+    "tar": "^7.4.3",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "husky": "^8.0.3",
-    "lint-staged": "^14.0.1"
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.1"
   }
 }
