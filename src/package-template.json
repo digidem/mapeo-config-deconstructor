@@ -20,17 +20,13 @@
   },
   "author": "",
   "license": "CC-BY-NC-4.0",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "main": "dist/presets.json",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/digidem/{name}.git"
   },
-  "keywords": [
-    "mapeo"
-  ],
+  "keywords": ["mapeo"],
   "bugs": {
     "url": "https://github.com/digidem/{name}/issues"
   },

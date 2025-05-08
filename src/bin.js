@@ -8,6 +8,8 @@ const {
   copyFiles,
   extractConfig,
   createPackageJson,
+  flattenTranslations,
+  cleanupOutputFolder,
 } = require("./index.js");
 
 let config = process.argv[2];
@@ -22,7 +24,12 @@ async function run() {
   await desconstructPresets(configFolder, outputFolder);
   await desconstructSvgSprite(configFolder, outputFolder);
   await copyFiles(configFolder, outputFolder);
+  await flattenTranslations(configFolder, outputFolder);
   await createPackageJson(configFolder, outputFolder);
+
+  // Clean up unwanted files
+  await cleanupOutputFolder(outputFolder);
+
   console.log("Done!");
 }
 

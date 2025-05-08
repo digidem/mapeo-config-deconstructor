@@ -7,6 +7,8 @@ const {
   copyFiles,
   createPackageJson,
   extractConfig,
+  flattenTranslations,
+  cleanupOutputFolder,
 } = index;
 const fs = require("fs");
 const path = require("path");
@@ -91,12 +93,33 @@ describe("desconstructPresets", () => {
       ),
     ).to.be.true;
 
+    // The field should be normalized to CoMapeo format
+    const normalizedField = {
+      tagKey: "test",
+      type: "text",
+      universal: false,
+    };
+
+    // Use sinon.match to match the JSON string regardless of property order
     expect(
       writeFileStub.calledWith(
         path.join("output", "fields", "test-field.json"),
-        JSON.stringify({ key: "test", type: "text" }),
+        sinon.match.string,
       ),
     ).to.be.true;
+
+    // Get the actual call and check its content
+    const fieldCall = writeFileStub
+      .getCalls()
+      .find(
+        (call) =>
+          call.args[0] === path.join("output", "fields", "test-field.json"),
+      );
+
+    const writtenField = JSON.parse(fieldCall.args[1]);
+    expect(writtenField).to.have.property("tagKey", "test");
+    expect(writtenField).to.have.property("type", "text");
+    expect(writtenField).to.have.property("universal", false);
 
     expect(
       writeFileStub.calledWith(
@@ -118,13 +141,14 @@ describe("desconstructPresets", () => {
 });
 
 describe("desconstructSvgSprite", () => {
-  let mkdirStub, writeFileStub, readFileStub, consoleErrorStub;
+  let mkdirStub, writeFileStub, readFileStub, consoleErrorStub, existsStub;
 
   beforeEach(() => {
     mkdirStub = sinon.stub(fs, "mkdirSync");
     writeFileStub = sinon.stub(fs, "writeFileSync");
     readFileStub = sinon.stub(fs, "readFileSync").returns("<svg></svg>");
     consoleErrorStub = sinon.stub(console, "error");
+    existsStub = sinon.stub(fs, "existsSync");
 
     // Create a mock for parseStringPromise that returns a valid structure
     const mockParsed = {
@@ -150,7 +174,13 @@ describe("desconstructSvgSprite", () => {
   });
 
   it("should handle errors gracefully", async () => {
-    readFileStub.throws(new Error("File not found"));
+    // Set up existsSync to return true for icons.svg
+    existsStub.withArgs(path.join("config", "icons.svg")).returns(true);
+
+    // Make readFileSync throw an error
+    readFileStub
+      .withArgs(path.join("config", "icons.svg"))
+      .throws(new Error("File not found"));
 
     await desconstructSvgSprite("config", "output");
 
@@ -172,8 +202,9 @@ describe("copyFiles", () => {
 
     // Set up existsSync to return true for our test files
     existsStub.withArgs(path.join("config", "metadata.json")).returns(true);
+    existsStub.withArgs(path.join("config", "defaults.json")).returns(true);
     existsStub.withArgs(path.join("config", "style.css")).returns(true);
-    existsStub.withArgs(path.join("config", "translation.json")).returns(false);
+    existsStub.withArgs(path.join("config", "translations.json")).returns(true);
   });
 
   afterEach(() => {
@@ -182,9 +213,10 @@ describe("copyFiles", () => {
     consoleErrorStub.restore();
   });
 
-  it("should copy files that exist from config to output folder", async () => {
+  it("should only copy metadata.json and defaults.json from config to output folder", async () => {
     await copyFiles("config", "output");
 
+    // Should copy metadata.json
     expect(
       copyStub.calledWith(
         path.join("config", "metadata.json"),
@@ -192,17 +224,27 @@ describe("copyFiles", () => {
       ),
     ).to.be.true;
 
+    // Should copy defaults.json
+    expect(
+      copyStub.calledWith(
+        path.join("config", "defaults.json"),
+        path.join("output", "defaults.json"),
+      ),
+    ).to.be.true;
+
+    // Should NOT copy style.css
     expect(
       copyStub.calledWith(
         path.join("config", "style.css"),
         path.join("output", "style.css"),
       ),
-    ).to.be.true;
+    ).to.be.false;
 
+    // Should NOT copy translations.json
     expect(
       copyStub.calledWith(
-        path.join("config", "translation.json"),
-        path.join("output", "translation.json"),
+        path.join("config", "translations.json"),
+        path.join("output", "translations.json"),
       ),
     ).to.be.false;
   });
@@ -280,6 +322,207 @@ describe("createPackageJson", () => {
     } catch (error) {
       expect(error.message).to.equal("Metadata not found");
     }
+  });
+});
+
+describe("flattenTranslations", () => {
+  let existsStub,
+    readFileStub,
+    writeFileStub,
+    mkdirpStub,
+    consoleLogStub,
+    consoleErrorStub;
+  const mockTranslations = {
+    en: {
+      presets: {
+        building: { name: "Building" },
+        river: { name: "River" },
+      },
+      fields: {
+        name: { label: "Name", helperText: "Common name for this place." },
+        notes: { label: "Notes", helperText: "Additional information." },
+      },
+      categories: {},
+    },
+    fr: {
+      presets: {
+        building: { name: "Bâtiment" },
+        river: { name: "Rivière" },
+      },
+      fields: {
+        name: { label: "Nom", helperText: "Nom commun pour cet endroit." },
+        notes: { label: "Notes", helperText: "Informations supplémentaires." },
+      },
+      categories: {},
+    },
+  };
+
+  beforeEach(() => {
+    existsStub = sinon.stub(fs, "existsSync");
+    readFileStub = sinon.stub(fs, "readFileSync");
+    writeFileStub = sinon.stub(fs, "writeFileSync");
+    mkdirpStub = sinon.stub(require("mkdirp"), "sync");
+    consoleLogStub = sinon.stub(console, "log");
+    consoleErrorStub = sinon.stub(console, "error");
+
+    // Set up existsSync to return true for translations.json
+    existsStub.withArgs(path.join("config", "translations.json")).returns(true);
+
+    // Set up readFileSync to return mock translations
+    readFileStub
+      .withArgs(path.join("config", "translations.json"))
+      .returns(JSON.stringify(mockTranslations));
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should create the messages directory", async () => {
+    await flattenTranslations("config", "output");
+
+    expect(mkdirpStub.calledWith(path.join("output", "messages"))).to.be.true;
+  });
+
+  it("should process each language in the translations file", async () => {
+    await flattenTranslations("config", "output");
+
+    // Check that we wrote files for both languages
+    expect(
+      writeFileStub.calledWith(
+        path.join("output", "messages", "en.json"),
+        sinon.match.string,
+      ),
+    ).to.be.true;
+
+    expect(
+      writeFileStub.calledWith(
+        path.join("output", "messages", "fr.json"),
+        sinon.match.string,
+      ),
+    ).to.be.true;
+  });
+
+  it("should flatten preset names correctly", async () => {
+    await flattenTranslations("config", "output");
+
+    // Get the first call to writeFileSync (en.json)
+    const enCall = writeFileStub
+      .getCalls()
+      .find(
+        (call) => call.args[0] === path.join("output", "messages", "en.json"),
+      );
+
+    const enData = JSON.parse(enCall.args[1]);
+
+    expect(enData["presets.building.name"]).to.deep.equal({
+      description: "The name of preset 'building'",
+      message: "Building",
+    });
+
+    expect(enData["presets.river.name"]).to.deep.equal({
+      description: "The name of preset 'river'",
+      message: "River",
+    });
+  });
+
+  it("should flatten field labels and helper text correctly", async () => {
+    await flattenTranslations("config", "output");
+
+    // Get the first call to writeFileSync (en.json)
+    const enCall = writeFileStub
+      .getCalls()
+      .find(
+        (call) => call.args[0] === path.join("output", "messages", "en.json"),
+      );
+
+    const enData = JSON.parse(enCall.args[1]);
+
+    expect(enData["fields.name.label"]).to.deep.equal({
+      description: "Label for field 'name'",
+      message: "Name",
+    });
+
+    expect(enData["fields.name.helperText"]).to.deep.equal({
+      description: "Helper text for field 'name'",
+      message: "Common name for this place.",
+    });
+  });
+
+  it("should skip processing if translations.json doesn't exist", async () => {
+    // Override existsSync to return false for translations.json
+    existsStub
+      .withArgs(path.join("config", "translations.json"))
+      .returns(false);
+
+    await flattenTranslations("config", "output");
+
+    // Verify that mkdirp was not called
+    expect(mkdirpStub.called).to.be.false;
+
+    // Verify that writeFileSync was not called
+    expect(writeFileStub.called).to.be.false;
+  });
+
+  it("should handle errors gracefully", async () => {
+    // Make readFileSync throw an error
+    readFileStub
+      .withArgs(path.join("config", "translations.json"))
+      .throws(new Error("File read error"));
+
+    await flattenTranslations("config", "output");
+
+    expect(
+      consoleErrorStub.calledWith(sinon.match(/Error in flattenTranslations/)),
+    ).to.be.true;
+  });
+});
+
+describe("cleanupOutputFolder", () => {
+  let existsStub, unlinkStub, consoleErrorStub;
+
+  beforeEach(() => {
+    existsStub = sinon.stub(fs, "existsSync");
+    unlinkStub = sinon.stub(fs, "unlinkSync");
+    consoleErrorStub = sinon.stub(console, "error");
+
+    // Set up existsSync to return true for our test files
+    existsStub.withArgs(path.join("output", "icons.png")).returns(true);
+    existsStub.withArgs(path.join("output", "icons.svg")).returns(true);
+    existsStub.withArgs(path.join("output", "translations.json")).returns(true);
+    existsStub.withArgs(path.join("output", "VERSION")).returns(true);
+    existsStub.withArgs(path.join("output", "style.css")).returns(true);
+    existsStub.withArgs(path.join("output", "presets.json")).returns(true);
+  });
+
+  afterEach(() => {
+    existsStub.restore();
+    unlinkStub.restore();
+    consoleErrorStub.restore();
+  });
+
+  it("should remove unwanted files from the output folder", async () => {
+    await cleanupOutputFolder("output");
+
+    // Check that all unwanted files were removed
+    expect(unlinkStub.calledWith(path.join("output", "icons.png"))).to.be.true;
+    expect(unlinkStub.calledWith(path.join("output", "icons.svg"))).to.be.true;
+    expect(unlinkStub.calledWith(path.join("output", "translations.json"))).to
+      .be.true;
+    expect(unlinkStub.calledWith(path.join("output", "VERSION"))).to.be.true;
+    expect(unlinkStub.calledWith(path.join("output", "style.css"))).to.be.true;
+    expect(unlinkStub.calledWith(path.join("output", "presets.json"))).to.be
+      .true;
+  });
+
+  it("should handle errors gracefully", async () => {
+    unlinkStub.throws(new Error("Permission denied"));
+
+    await cleanupOutputFolder("output");
+
+    expect(
+      consoleErrorStub.calledWith(sinon.match(/Error in cleanupOutputFolder/)),
+    ).to.be.true;
   });
 });
 
