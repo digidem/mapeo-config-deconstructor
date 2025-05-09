@@ -14,16 +14,18 @@ Mapeo Configuration Deconstructor is a tool designed to simplify the process of 
 
 ## Usage
 
-You can use Mapeo Configuration Deconstructor via `npx` or install it globally using `npm`.
+You can use Mapeo Configuration Deconstructor via the command line or programmatically in your Node.js applications.
 `outputFolder` defaults to directory where program is executed from.
 
-### Using npx
+### Command Line Usage
+
+#### Using npx
 
 ```bash
 npx mapeo-config-deconstructor [config] [outputFolder]
 ```
 
-### Installing globally
+#### Installing globally
 
 ```bash
 npm install -g mapeo-config-deconstructor
@@ -34,6 +36,46 @@ Then you can run it with:
 ```bash
 mapeo-config-deconstructor [config] [outputFolder]
 ```
+
+### Programmatic Usage
+
+You can also use Mapeo Configuration Deconstructor programmatically in your Node.js applications:
+
+```javascript
+const { deconstruct } = require("mapeo-config-deconstructor");
+
+async function run() {
+  try {
+    const result = await deconstruct({
+      configPath: "/path/to/config.mapeosettings",
+      outputFolder: "/path/to/output",
+    });
+
+    if (result.success) {
+      console.log(
+        `Successfully deconstructed ${result.configName} to ${result.outputFolder}`,
+      );
+    } else {
+      console.error(`Error: ${result.error}`);
+    }
+  } catch (error) {
+    console.error(`Unexpected error: ${error.message}`);
+  }
+}
+
+run();
+```
+
+#### API Options
+
+The `deconstruct` function accepts an options object with the following properties:
+
+| Option            | Type    | Required | Description                                                                 |
+| ----------------- | ------- | -------- | --------------------------------------------------------------------------- |
+| `configPath`      | string  | Yes      | Path to the configuration file (.mapeosettings or .comapeocat) or directory |
+| `outputFolder`    | string  | No       | Path to the output folder. If not provided, a temporary folder will be used |
+| `skipCleanup`     | boolean | No       | Whether to skip cleaning up unwanted files (default: false)                 |
+| `skipPackageJson` | boolean | No       | Whether to skip creating package.json (default: false)                      |
 
 ## File Format Support
 

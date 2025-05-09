@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const path = require("path");
-const tar = require("tar");
 const {
   desconstructPresets,
   desconstructSvgSprite,
@@ -10,7 +7,7 @@ const {
   createPackageJson,
   flattenTranslations,
   cleanupOutputFolder,
-} = require("./index.js");
+} = require("./main.js");
 
 let config = process.argv[2];
 let argOutputFolder = process.argv[3];

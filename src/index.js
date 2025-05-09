@@ -435,6 +435,7 @@ async function cleanupOutputFolder(outputFolder) {
   }
 }
 
+// Export core functions
 module.exports = {
   desconstructPresets,
   desconstructSvgSprite,

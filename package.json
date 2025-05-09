@@ -1,13 +1,14 @@
 {
   "name": "mapeo-config-deconstructor",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A tool to deconstruct Mapeo and CoMapeo configuration files into individual components for easier editing and version control",
-  "main": "src/bin.js",
+  "main": "src/main.js",
   "bin": {
     "mapeo-config-deconstructor": "./src/bin.js"
   },
   "scripts": {
-    "test": "nyc --reporter=text mocha src/**/*.test.js && npm run test:real",
+    "test": "nyc --reporter=text mocha src/**/*.test.js",
+    "test:all": "npm test && npm run test:real",
     "test:coverage": "nyc --reporter=html --reporter=text mocha src/**/*.test.js",
     "lint": "prettier --write ./**/*.js",
     "prepare": "husky install",
