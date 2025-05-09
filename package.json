@@ -3,6 +3,7 @@
   "version": "3.0.2",
   "description": "A tool to deconstruct Mapeo and CoMapeo configuration files into individual components for easier editing and version control",
   "main": "src/main.js",
+  "type": "commonjs",
   "bin": {
     "mapeo-config-deconstructor": "./src/bin.js"
   },
@@ -30,15 +31,15 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "chai": "^5.2.0",
+    "chai": "^4.3.7",
     "husky": "^9.1.7",
     "jszip": "^3.10.1",
     "lint-staged": "^15.5.1",
     "mkdirp": "^3.0.1",
-    "mocha": "^11.2.2",
-    "nyc": "^17.1.0",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "proxyquire": "^2.1.3",
     "rimraf": "^6.0.1",
-    "sinon": "^20.0.0"
+    "sinon": "^15.2.0"
   }
 }
